@@ -24,12 +24,13 @@ public class PaginationController {
         return "Hello";
     }
 
-    @RequestMapping(value = "/conditionalPagination", params = { "orderBy", "direction", "page",
-            "size" }, method = RequestMethod.GET)
+    @GetMapping(value = "/conditionalPagination", params = { "orderBy", "direction"})
     @ResponseBody
-    public Page<PagingEntity> findJsonDataByPageAndSize(@RequestParam("orderBy") String orderBy,
-                                                        @RequestParam("direction") String direction, @RequestParam("page") int page,
-                                                        @RequestParam("size") int size) {
+    public Page<PagingEntity> findJsonDataByPageAndSize(
+            @RequestParam(value = "orderBy", required = true, defaultValue = "") String orderBy,
+            @RequestParam(value = "direction", required = true, defaultValue = "") String direction,
+            @RequestParam(value = "page", required = false, defaultValue = "0") int page,
+            @RequestParam(value = "size", required = false, defaultValue = "1") String size) {
         if (!(direction.equals(Direction.ASCENDING.getDirectionCode())
                 || direction.equals(Direction.DESCENDING.getDirectionCode()))) {
             throw new PaginationSortingException("Invalid sort direction");
@@ -37,7 +38,7 @@ public class PaginationController {
         if (!(orderBy.equals(OrderBy.ID.getOrderByCode()) || orderBy.equals(OrderBy.USERID.getOrderByCode()))) {
             throw new PaginationSortingException("Invalid orderBy condition");
         }
-        Page<PagingEntity> list = paginationService.findJsonDataByCondition(orderBy, direction, page, size);
+        Page<PagingEntity> list = paginationService.findJsonDataByCondition(orderBy, direction, page, Integer.valueOf(size));
         return list;
     }
 
